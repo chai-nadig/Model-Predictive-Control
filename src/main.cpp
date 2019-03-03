@@ -48,19 +48,21 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
+          VectorXd ptsx2 = Eigen::Map<VectorXd, Eigen::Unaligned>(ptsx.data(), ptsx.size());
+          VectorXd ptsy2 = Eigen::Map<VectorXd, Eigen::Unaligned>(ptsy.data(), ptsy.size());
+
+          /**
+          * fit a polynomial to the above x and y coordinates
+          */
+          auto coeffs = polyfit(ptsx2, ptsy2, 1);
           /**
            * calculate the cross track error
            */
-          double cte = polyeval(coeffs, x) - y ;
+          double cte = polyeval(coeffs, px) - py ;
           /**
            * calculate the orientation error
            */
           double epsi = psi - atan(coeffs[1]) ;
-          /**
-          * fit a polynomial to the above x and y coordinates
-          */
-          auto coeffs = polyfit(ptsx, ptsy, 1);
-
 
           VectorXd state(6);
           state << px, py, psi, v, cte, epsi;

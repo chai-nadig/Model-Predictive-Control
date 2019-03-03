@@ -27,6 +27,10 @@ double dt = 0.75;
 // This is the length from front to CoG that has a similar radius.
 const double Lf = 2.67;
 
+// Both the reference cross track and orientation errors are 0.
+// The reference velocity is set to 35 mph.
+double ref_v = 35;
+
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
 // when one variable starts and another ends to make our lifes easier.
@@ -145,7 +149,7 @@ class FG_eval {
 MPC::MPC() {}
 MPC::~MPC() {}
 
-std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
+std::vector<double> MPC::Solve(const VectorXd &x0, const VectorXd &coeffs) {
   bool ok = true;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
