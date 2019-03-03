@@ -49,26 +49,44 @@ int main() {
           double v = j[1]["speed"];
 
           /**
-           * TODO: Calculate steering angle and throttle using MPC.
+           * calculate the cross track error
+           */
+          double cte = polyeval(coeffs, x) - y ;
+          /**
+           * calculate the orientation error
+           */
+          double epsi = psi - atan(coeffs[1]) ;
+          /**
+          * fit a polynomial to the above x and y coordinates
+          */
+          auto coeffs = polyfit(ptsx, ptsy, 1);
+
+
+          VectorXd state(6);
+          state << px, py, psi, v, cte, epsi;
+
+          /**
+           * Calculate steering angle and throttle using MPC.
            * Both are in between [-1, 1].
            */
-          double steer_value;
-          double throttle_value;
+          auto vars = mpc.Solve(state, coeffs);
+          double steer_value = vars[6] / deg2rad(25);
+          double throttle_value = vars[7];
 
           json msgJson;
-          // NOTE: Remember to divide by deg2rad(25) before you send the 
-          //   steering value back. Otherwise the values will be in between 
+          // NOTE: Remember to divide by deg2rad(25) before you send the
+          //   steering value back. Otherwise the values will be in between
           //   [-deg2rad(25), deg2rad(25] instead of [-1, 1].
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle_value;
 
-          // Display the MPC predicted trajectory 
+          // Display the MPC predicted trajectory
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
 
           /**
-           * TODO: add (x,y) points to list here, points are in reference to 
-           *   the vehicle's coordinate system the points in the simulator are 
+           * TODO: add (x,y) points to list here, points are in reference to
+           *   the vehicle's coordinate system the points in the simulator are
            *   connected by a Green line
            */
 
@@ -80,8 +98,8 @@ int main() {
           vector<double> next_y_vals;
 
           /**
-           * TODO: add (x,y) points to list here, points are in reference to 
-           *   the vehicle's coordinate system the points in the simulator are 
+           * TODO: add (x,y) points to list here, points are in reference to
+           *   the vehicle's coordinate system the points in the simulator are
            *   connected by a Yellow line
            */
 
@@ -127,6 +145,6 @@ int main() {
     std::cerr << "Failed to listen to port" << std::endl;
     return -1;
   }
-  
+
   h.run();
 }
