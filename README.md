@@ -27,14 +27,15 @@
 ### Update equations
 - The update equations for each of the state variables are as follows:
 
-##### x<sub>t+1</sub> = x<sub>t</sub> + v<sub>t</sub> * cos(ψ<sub>t</sub>) ∗ dt
+#### x<sub>t+1</sub> = x<sub>t</sub> + v<sub>t</sub> * cos(ψ<sub>t</sub>) ∗ dt
+#### y<sub>t+1</sub> = y<sub>t</sub> + v<sub>t</sub> * sin(ψ<sub>t</sub>) ∗ dt
+#### ψ<sub>t+1</sub> = ψ<sub>t</sub> + v<sub>t</sub> / L<sub>f</sub> * δ<sub>t</sub> ∗ dt
+#### v<sub>t+1</sub> = v<sub>t</sub> + a<sub>t</sub> ∗ dt
+#### cte<sub>t+1</sub> = f(x<sub>t</sub>) − y<sub>t</sub> + v<sub>t</sub> ∗ sin(eψ<sub>t</sub>) ∗ dt
+#### eψ<sub>t+1</sub> = ψ<sub>t</sub> - ψdes<sub>t</sub> + (v<sub>t</sub> /  L<sub>f</sub>  *  δ<sub>t</sub> * dt)
 
-##### y<sub>t+1</sub> = y<sub>t</sub> + v<sub>t</sub> * sin(ψ<sub>t</sub>) ∗ dt
 
-##### ψ<sub>t+1</sub> = ψ<sub>t</sub> + v<sub>t</sub> / L<sub>f</sub> * δ<sub>t</sub> ∗ dt
-
-##### v<sub>t+1</sub> = v<sub>t</sub> + a<sub>t</sub> ∗ dt
-
-##### cte<sub>t+1</sub> = f(x<sub>t</sub>) − y<sub>t</sub> + v<sub>t</sub> ∗ sin(eψ<sub>t</sub>) ∗ dt
-
-##### eψ<sub>t+1</sub> = ψ<sub>t</sub> - ψdes<sub>t</sub> + (v<sub>t</sub> /  L<sub>f</sub>  *  δ<sub>t</sub> * dt)
+## Prediction
+- The prediction part includes calculating actuator values for a specific number of time steps upto a few seconds.
+- These are determined by hyper parameters `N` and `dt`. `N` is the number of time steps and `dt` is the length of each time step in seconds. `N` * `dt` = `time in seconds` up to which we predict actuator values.
+- Choosing a large `dt` leads to a discretization problem where the actuator values might be very large leading to sudden changes.
