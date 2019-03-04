@@ -25,7 +25,7 @@
 |   a      | [-1, 1]     | This is acceleration and deceleration. It alters the velocity of the car. It can range between -1 and 1 with negative values denoting deceleration or braking. |
 
 ### Update equations
-- The update equations for each of the state variables are as follows:
+The update equations for each of the state variables are as follows:
 
 #### x<sub>t+1</sub> = x<sub>t</sub> + v<sub>t</sub> * cos(ψ<sub>t</sub>) ∗ dt
 #### y<sub>t+1</sub> = y<sub>t</sub> + v<sub>t</sub> * sin(ψ<sub>t</sub>) ∗ dt
@@ -39,3 +39,6 @@
 - The prediction part includes calculating actuator values for a specific number of time steps upto a few seconds.
 - These are determined by hyper parameters `N` and `dt`. `N` is the number of time steps and `dt` is the length of each time step in seconds. `N` * `dt` = `time in seconds` up to which we predict actuator values.
 - Choosing a large `dt` leads to a discretization problem where the actuator values might be very large leading to sudden changes.
+![Discretization Error](discretization_error.gif)
+- Choosing a very small `dt` will make the actuator values so small that the car will stray from the road.
+![Very small dt](verylow_dt.gif)
