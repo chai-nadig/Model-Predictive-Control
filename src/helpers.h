@@ -2,10 +2,12 @@
 #define HELPERS_H
 
 #include <string>
+#include <vector>
 #include "Eigen-3.3/Eigen/Core"
 
 using Eigen::VectorXd;
 using std::string;
+using std::vector;
 
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
@@ -58,6 +60,23 @@ VectorXd polyfit(const VectorXd &xvals, const VectorXd &yvals, int order) {
   auto result = Q.solve(yvals);
 
   return result;
+}
+
+vector<double> transform(vector<double> source, vector<double> destination) {
+  double x_s = source[0];
+  double y_s = source[1];
+  double t_s = source[2];
+
+  double x_d = destination[0];
+  double y_d = destination[1];
+
+  double dx = x_s - x_d;
+  double dy = y_s - y_d;
+
+  double x_map, y_map;
+  x_map = cos(t_s) * dx - sin(t_s) * dy;
+  y_map = sin(t_s) * dx + cos(t_s) * dy;
+  return {x_map, y_map};
 }
 
 #endif  // HELPERS_H

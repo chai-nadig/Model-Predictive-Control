@@ -12,8 +12,8 @@ using Eigen::VectorXd;
 /**
  * TODO: Set the timestep length and duration
  */
-size_t N = 20;
-double dt = 0.75;
+size_t N = 10;
+double dt = 0.1;
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -61,21 +61,21 @@ class FG_eval {
 
     // The part of the cost based on the reference state.
     for (int t = 0; t < N; ++t) {
-      fg[0] += CppAD::pow(vars[cte_start + t], 2);
-      fg[0] += CppAD::pow(vars[epsi_start + t], 2);
+      fg[0] += 1000 * CppAD::pow(vars[cte_start + t], 2);
+      fg[0] += 1000 * CppAD::pow(vars[epsi_start + t], 2);
       fg[0] += CppAD::pow(vars[v_start + t] - ref_v, 2);
     }
 
     // Minimize the use of actuators.
     for (int t = 0; t < N - 1; ++t) {
-      fg[0] += CppAD::pow(vars[delta_start + t], 2);
-      fg[0] += CppAD::pow(vars[a_start + t], 2);
+      fg[0] += 800 * CppAD::pow(vars[delta_start + t], 2);
+      fg[0] += 10 * CppAD::pow(vars[a_start + t], 2);
     }
 
     // Minimize the value gap between sequential actuations.
     for (int t = 0; t < N - 2; ++t) {
-      fg[0] += CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
-      fg[0] += CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
+      fg[0] += 1000 * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
+      fg[0] += 10 * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
     }
 
     //
@@ -118,8 +118,19 @@ class FG_eval {
       AD<double> delta0 = vars[delta_start + t - 1];
       AD<double> a0 = vars[a_start + t - 1];
 
-      AD<double> f0 = coeffs[0] + coeffs[1] * x0;
-      AD<double> psides0 = CppAD::atan(coeffs[1]);
+      if (t > 1) {
+        delta0 = vars[delta_start + t - 2];
+        a0 = vars[a_start + t - 2];
+      }
+
+      AD<double> f0 = coeffs[0] + coeffs[1] * x0 +
+                      coeffs[2] * CppAD::pow(x0, 2) +
+                      coeffs[3] * CppAD::pow(x0, 3);
+      AD<double> psides0 = CppAD::atan(
+        coeffs[1] +
+        coeffs[2] * x0 +
+        coeffs[3] * CppAD::pow(x0, 2)
+      );
 
       // Here's `x` to get you started.
       // The idea here is to constraint this value to be 0.
@@ -149,28 +160,28 @@ class FG_eval {
 MPC::MPC() {}
 MPC::~MPC() {}
 
-std::vector<double> MPC::Solve(const VectorXd &x0, const VectorXd &coeffs) {
+std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
   bool ok = true;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
   /**
-   * TODO: Set the number of model variables (includes both states and inputs).
+   * Set the number of model variables (includes both states and inputs).
    * For example: If the state is a 4 element vector, the actuators is a 2
    *   element vector and there are 10 timesteps. The number of variables is:
    *   4 * 10 + 2 * 9
    */
   size_t n_vars = N * 6 + (N - 1) * 2;
   /**
-   * TODO: Set the number of constraints
+   * Set the number of constraints
    */
   size_t n_constraints = N * 6;
 
-  double x = x0[0];
-  double y = x0[1];
-  double psi = x0[2];
-  double v = x0[3];
-  double cte = x0[4];
-  double epsi = x0[5];
+  double x = state[0];
+  double y = state[1];
+  double psi = state[2];
+  double v = state[3];
+  double cte = state[4];
+  double epsi = state[5];
 
 
   // Initial value of the independent variables.
@@ -279,8 +290,13 @@ std::vector<double> MPC::Solve(const VectorXd &x0, const VectorXd &coeffs) {
    * {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
    *   creates a 2 element double vector.
    */
-   return {solution.x[x_start + 1],   solution.x[y_start + 1],
-           solution.x[psi_start + 1], solution.x[v_start + 1],
-           solution.x[cte_start + 1], solution.x[epsi_start + 1],
-           solution.x[delta_start],   solution.x[a_start]};
+   std::vector<double> result;
+   result.push_back(solution.x[delta_start]);
+   result.push_back(solution.x[a_start]);
+
+   for (int i = 0; i < N-1; i++) {
+     result.push_back(solution.x[x_start + 1 + i]);
+     result.push_back(solution.x[y_start + 1 + i]);
+   }
+   return result;
 }
