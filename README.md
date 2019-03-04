@@ -39,6 +39,9 @@ The update equations for each of the state variables are as follows:
 - The prediction part includes calculating actuator values for a specific number of time steps upto a few seconds.
 - These are determined by hyper parameters `N` and `dt`. `N` is the number of time steps and `dt` is the length of each time step in seconds. `N` * `dt` = `time in seconds` up to which we predict actuator values.
 - Choosing a large `dt` leads to a discretization problem where the actuator values might be very large leading to sudden changes.
+
 ![Discretization Error](discretization_error.gif)
+
 - Choosing a very small `dt` will make the actuator values so small that the car will stray from the road.
+
 ![Very small dt](verylow_dt.gif)
