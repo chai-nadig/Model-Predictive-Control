@@ -36,12 +36,28 @@ The update equations for each of the state variables are as follows:
 
 
 ## Prediction
+
+### Timestep length and elapsed duration
 - The prediction part includes calculating actuator values for a specific number of time steps upto a few seconds.
-- These are determined by hyper parameters `N` and `dt`. `N` is the number of time steps and `dt` is the length of each time step in seconds. `N` * `dt` = `time in seconds` up to which we predict actuator values.
+- These are determined by hyper parameters `N` and `dt`.
+- `N` is the number of time steps and `dt` is the length of each time step in seconds.
+- `N` * `dt` = `elapsed duration` is the duration up to which we predict actuator values.
 - Choosing a large `dt` leads to a discretization problem where the actuator values might be very large leading to sudden changes.
 
 ![Discretization Error](disc.gif)
 
-- Choosing a very small `dt` will make the actuator values so small that the car will stray from the road.
+- Choosing a very small `dt` will make the actuator values so small that the car won't change orientation or velocity fast enough and will stray from the road.
 
 ![Very small dt](smalldt.gif)
+
+### Fitting the polynomial
+- We fit a 3rd degree polynomial for the waypoints provided. This serves as the reference trajectory.
+- The waypoints are provided with coordinates in the global system.
+- They are transformed into the car's coordinate system before fitting the polynomial.
+- This transformation helps avoid calculations down the line. Since the polynomial is fitted to the transformed waypoints, the predicted points also are in the car's coordinate system.
+
+### Latency in transmission
+- There's a 100ms latency in the actuators taking effect on the car.
+- The time step duration is set to 100ms. This way, it becomes easy to model in this latency.
+- To account for this latency we consider the `delta0` and `a0` values to be two time steps before the current one.
+- This is because it takes 100ms for the change in actuators to happen, and we need another 100ms to observe the state change of the car due to the change in actuators.
