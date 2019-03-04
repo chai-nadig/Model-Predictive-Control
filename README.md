@@ -27,14 +27,14 @@
 ### Update equations
 - The update equations for each of the state variables are as follows:
 
-> x<sub>t+1</sub> = x<sub>t</sub> + v<sub>t</sub> * cos(ψ<sub>t</sub>) ∗ dt
+##### x<sub>t+1</sub> = x<sub>t</sub> + v<sub>t</sub> * cos(ψ<sub>t</sub>) ∗ dt
 
-> y<sub>t+1</sub> = y<sub>t</sub> + v<sub>t</sub> * sin(ψ<sub>t</sub>) ∗ dt
+##### y<sub>t+1</sub> = y<sub>t</sub> + v<sub>t</sub> * sin(ψ<sub>t</sub>) ∗ dt
 
-> ψ<sub>t+1</sub> = ψ<sub>t</sub> + v<sub>t</sub> / L<sub>f</sub> * δ<sub>t</sub> q ∗ dt
+##### ψ<sub>t+1</sub> = ψ<sub>t</sub> + v<sub>t</sub> / L<sub>f</sub> * δ<sub>t</sub> ∗ dt
 
-> v<sub>t+1</sub> = v<sub>t</sub> + a<sub>t</sub> ∗ dt
+##### v<sub>t+1</sub> = v<sub>t</sub> + a<sub>t</sub> ∗ dt
 
-> cte<sub>t+1</sub> = f(x<sub>t</sub>) − y<sub>t</sub> + v<sub>t</sub> ∗ sin(eψ<sub>t</sub>) ∗ dt
+##### cte<sub>t+1</sub> = f(x<sub>t</sub>) − y<sub>t</sub> + v<sub>t</sub> ∗ sin(eψ<sub>t</sub>) ∗ dt
 
-> eψ<sub>t+1</sub> = ψ<sub>t</sub> - ψdes<sub>t</sub> + (v<sub>t</sub> /  L<sub>f</sub>  *  δ<sub>t</sub> * dt)eψ
+##### eψ<sub>t+1</sub> = ψ<sub>t</sub> - ψdes<sub>t</sub> + (v<sub>t</sub> /  L<sub>f</sub>  *  δ<sub>t</sub> * dt)
